@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "DevMirror - GitHub-powered developer assessment platform",
   "scripts": {
-    "dev": "npm run dev --prefix backend",
+    "build": "node -e \"const fs = require('fs'); fs.copyFileSync('frontend/index.html', 'index.html'); console.log('Build completed successfully.');\"",
     "start": "node backend/server.js",
+    "dev": "npm run dev --prefix backend",
     "test": "npm test --prefix backend"
   },
   "dependencies": {
@@ -19,12 +20,6 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.5",
     "zod": "^3.24.1"
-  },
-  "devDependencies": {
-    "jest": "^29.7.0",
-    "mongodb-memory-server": "^10.1.3",
-    "nodemon": "^3.1.9",
-    "supertest": "^7.0.0"
   },
   "keywords": [
     "devmirror",
