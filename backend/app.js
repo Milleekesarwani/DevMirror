@@ -63,9 +63,11 @@ app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 // Cookie parser for HttpOnly authentication cookies
 app.use(cookieParser(process.env.COOKIE_SECRET || 'devmirror_cookie_secret'));
 
-// Serve frontend static assets directly from /frontend
+// Serve frontend static assets directly from /frontend, root, and public
 const frontendPath = path.join(__dirname, '../frontend');
 app.use(express.static(frontendPath));
+app.use(express.static(path.join(__dirname, '..')));
+app.use(express.static(path.join(__dirname, '../public')));
 
 // Apply standard API rate limiter to all API endpoints
 app.use('/api', apiLimiter);
@@ -95,7 +97,11 @@ app.get('*', (req, res, next) => {
       error: `Route not found: ${req.method} ${req.originalUrl}`
     });
   }
-  res.sendFile(path.join(frontendPath, 'index.html'));
+  const fs = require('fs');
+  const rootIndex = path.join(__dirname, '../index.html');
+  const frontendIndex = path.join(frontendPath, 'index.html');
+  const indexPath = fs.existsSync(rootIndex) ? rootIndex : frontendIndex;
+  res.sendFile(indexPath);
 });
 
 // Centralized error handling middleware

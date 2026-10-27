@@ -2,9 +2,10 @@
   "name": "devmirror",
   "version": "1.0.0",
   "description": "DevMirror - GitHub-powered developer assessment platform",
+  "main": "index.js",
   "scripts": {
     "build": "node -e \"const fs = require('fs'); fs.copyFileSync('frontend/index.html', 'index.html'); console.log('Build completed successfully.');\"",
-    "start": "node backend/server.js",
+    "start": "node index.js",
     "dev": "npm run dev --prefix backend",
     "test": "npm test --prefix backend"
   },
