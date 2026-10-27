@@ -81,6 +81,22 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+const { connectDB } = require('./config/db');
+
+// Serverless database connection handler
+let isDbConnecting = false;
+app.use(async (req, res, next) => {
+  if (!isDbConnecting) {
+    try {
+      await connectDB();
+      isDbConnecting = true;
+    } catch (e) {
+      console.warn('[DB] Serverless connection notice:', e.message);
+    }
+  }
+  next();
+});
+
 // Mount application API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/repos', repoRoutes);
