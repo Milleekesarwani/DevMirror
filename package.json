@@ -1,0 +1,17 @@
+{
+  "name": "devmirror",
+  "version": "1.0.0",
+  "description": "DevMirror - GitHub-powered developer assessment platform",
+  "scripts": {
+    "dev": "npm run dev --prefix backend",
+    "start": "npm start --prefix backend",
+    "test": "npm test --prefix backend"
+  },
+  "keywords": [
+    "devmirror",
+    "assessment",
+    "fullstack"
+  ],
+  "author": "",
+  "license": "ISC"
+}
