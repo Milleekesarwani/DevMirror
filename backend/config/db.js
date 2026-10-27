@@ -53,11 +53,9 @@ const connectDB = async () => {
         return conn;
       } catch (memError) {
         console.error('[Database] Failed to start in-memory MongoDB fallback:', memError.message);
-        throw error;
       }
     } else {
-      console.error(`[Database] Startup connection failed: ${error.message}`);
-      throw error;
+      console.warn(`[Database] MongoDB connection warning: ${error.message}. Please configure MONGODB_URI in Vercel environment variables for persistent storage.`);
     }
   }
 };
