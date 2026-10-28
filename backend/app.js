@@ -75,14 +75,16 @@ app.use(express.static(path.join(__dirname, '../public')));
 // Apply standard API rate limiter to all API endpoints
 app.use('/api', apiLimiter);
 
-// Health check endpoint (Session 1 requirement)
-app.get('/api/health', (req, res) => {
+// Health check endpoint (accessible at /api/health and /health)
+const healthHandler = (req, res) => {
   res.status(200).json({
     status: 'ok',
     timestamp: new Date().toISOString(),
     uptime: process.uptime()
   });
-});
+};
+app.get('/api/health', healthHandler);
+app.get('/health', healthHandler);
 
 const { connectDB } = require('./config/db');
 
@@ -100,13 +102,19 @@ app.use(async (req, res, next) => {
   next();
 });
 
-// Mount application API routes
+// Mount application API routes (support both /api/* and /* for serverless function environments)
 app.use('/api/auth', authRoutes);
+app.use('/auth', authRoutes);
 app.use('/api/repos', repoRoutes);
+app.use('/repos', repoRoutes);
 app.use('/api/interviews', interviewRoutes);
+app.use('/interviews', interviewRoutes);
 app.use('/api/assessments', assessmentRoutes);
+app.use('/assessments', assessmentRoutes);
 app.use('/api/roadmap', roadmapRoutes);
+app.use('/roadmap', roadmapRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/dashboard', dashboardRoutes);
 
 // For all non-API GET requests, serve the connected frontend index.html
 app.get('*', (req, res, next) => {
