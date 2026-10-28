@@ -13,6 +13,7 @@ const interviewRoutes = require('./routes/interviewRoutes');
 const assessmentRoutes = require('./routes/assessmentRoutes');
 const roadmapRoutes = require('./routes/roadmapRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
+const ttsRoutes = require('./routes/ttsRoutes');
 
 const app = express();
 
@@ -115,6 +116,8 @@ app.use('/api/roadmap', roadmapRoutes);
 app.use('/roadmap', roadmapRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/dashboard', dashboardRoutes);
+app.use('/api/tts', ttsRoutes);
+app.use('/tts', ttsRoutes);
 
 // For all non-API GET requests, serve the connected frontend index.html
 app.get('*', (req, res, next) => {

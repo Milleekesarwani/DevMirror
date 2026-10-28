@@ -359,7 +359,171 @@
       transition: opacity 0.2s, transform 0.2s;
     }
     .toast.hide { opacity: 0; pointer-events: none; transform: translateY(10px); }
-    .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+    /* Interview Mode & Character Speaking Styles */
+    .mode-toggle {
+      display: inline-flex;
+      background: #111418;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 3px;
+      gap: 4px;
+    }
+    .mode-btn {
+      background: none;
+      border: 0;
+      color: #949ea8;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .mode-btn:hover { color: #f0f1f2; }
+    .mode-btn.active {
+      background: #1e242c;
+      color: var(--green);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+
+    .interviewer-box {
+      background: radial-gradient(circle at 50% 20%, #1c261e 0%, #101413 70%);
+      border: 1px solid #2d3b2a;
+      border-radius: 12px;
+      padding: 24px 20px;
+      margin: 18px 0;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    .interviewer-box.speaking {
+      border-color: var(--green);
+      box-shadow: 0 0 24px rgba(188, 240, 142, 0.12);
+    }
+    .avatar-wrapper {
+      position: relative;
+      width: 106px;
+      height: 106px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .avatar-aura {
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(188, 240, 142, 0.25) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .speaking .avatar-aura {
+      opacity: 1;
+      animation: auraPulse 1.8s infinite ease-in-out;
+    }
+    @keyframes auraPulse {
+      0%, 100% { transform: scale(1); opacity: 0.3; }
+      50% { transform: scale(1.18); opacity: 0.75; }
+    }
+    .avatar-svg {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: #141b18;
+      border: 2px solid #364933;
+      padding: 6px;
+      transition: all 0.3s;
+      animation: avatarFloat 4s ease-in-out infinite;
+    }
+    .speaking .avatar-svg {
+      border-color: var(--green);
+      box-shadow: 0 0 16px rgba(188, 240, 142, 0.3);
+    }
+    @keyframes avatarFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+    .mouth-idle { display: block; }
+    .mouth-speak { display: none; }
+    .speaking .mouth-idle { display: none; }
+    .speaking .mouth-speak {
+      display: block;
+      animation: mouthTalk 0.25s infinite alternate ease-in-out;
+      transform-origin: center;
+    }
+    @keyframes mouthTalk {
+      from { transform: scaleY(0.4); }
+      to { transform: scaleY(1.3); }
+    }
+    .sound-waves {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      height: 16px;
+      margin-left: 8px;
+    }
+    .wave-bar {
+      width: 3px;
+      height: 5px;
+      background: var(--green);
+      border-radius: 2px;
+      transition: height 0.15s;
+    }
+    .speaking .wave-bar {
+      animation: waveBounce 0.8s infinite ease-in-out;
+    }
+    .speaking .wave-bar:nth-child(2) { animation-delay: 0.15s; }
+    .speaking .wave-bar:nth-child(3) { animation-delay: 0.3s; }
+    .speaking .wave-bar:nth-child(4) { animation-delay: 0.45s; }
+    .speaking .wave-bar:nth-child(5) { animation-delay: 0.6s; }
+    @keyframes waveBounce {
+      0%, 100% { height: 4px; }
+      50% { height: 16px; }
+    }
+    .speech-status {
+      font-size: 11px;
+      font-weight: 600;
+      color: #9eb195;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .speech-controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      margin-top: 14px;
+    }
+    .speech-bubble {
+      background: rgba(14, 18, 16, 0.85);
+      border: 1px solid #283726;
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #e5f0dc;
+      max-width: 720px;
+      width: 100%;
+      margin: 8px auto 0;
+      text-align: left;
+    }
+    .text-question-card {
+      background: #14181f;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      padding: 20px 22px;
+      margin: 16px 0;
+    }
 
     /* Responsive */
     @media (max-width: 900px) {
@@ -439,6 +603,10 @@
     let interviewIndex = 0;
     let activeRepoId = null;
     let backendHealthStatus = 'checking'; // 'checking' | 'connected' | 'unavailable'
+    let interviewMode = localStorage.getItem('devmirror_interview_mode') || 'avatar'; // 'avatar' | 'text'
+    let sarvamSpeaker = localStorage.getItem('sarvam_speaker') || 'meera';
+    let currentSpeechAudio = null;
+    let isSpeaking = false;
 
     // Real backend health check function
     async function checkBackendHealth(isManual = false) {
@@ -599,11 +767,16 @@
     }
 
     function go(p) {
+      if (p !== 'interview' && typeof stopSpeaking === 'function') stopSpeaking();
       location.hash = p;
       if (location.hash.slice(1) === p) render(p);
     }
 
-    window.addEventListener('hashchange', () => render(location.hash.slice(1)));
+    window.addEventListener('hashchange', () => {
+      const page = location.hash.slice(1);
+      if (page !== 'interview' && typeof stopSpeaking === 'function') stopSpeaking();
+      render(page);
+    });
 
     function heading(t, p, action = '') {
       return `<div class="heading"><div><h1>${t}</h1><p>${p}</p></div>${action}</div>`;
@@ -1289,10 +1462,13 @@
 
       const existingAnswer = (currentInterview.answers || []).find(a => a.questionId === q.id);
       const answerVal = existingAnswer ? existingAnswer.answerText : '';
+      const savedKey = localStorage.getItem('sarvam_api_key') || '';
 
       container.innerHTML = `
         ${heading('Less Memorizing. More Understanding.', 'Live practice session grounded strictly in your project files.', `
-          <span class="pill">Question ${interviewIndex + 1} of ${totalQ}</span>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <span class="pill">Question ${interviewIndex + 1} of ${totalQ}</span>
+          </div>
         `)}
 
         <section class="card formbox" style="max-width:850px">
@@ -1309,9 +1485,123 @@
             <b>Grounded in File:</b> <code>${escapeHTML(q.sourceFile)}</code>
           </div>
 
-          <div class="question">${escapeHTML(q.question)}</div>
+          <!-- 2 Interview Modes Toggle -->
+          <div style="display:flex;justify-content:space-between;align-items:center;margin:18px 0 12px;flex-wrap:wrap;gap:10px">
+            <div class="mode-toggle" role="tablist">
+              <button class="mode-btn ${interviewMode === 'text' ? 'active' : ''}" onclick="toggleInterviewMode('text')" title="Display question as text">
+                📄 Text Option
+              </button>
+              <button class="mode-btn ${interviewMode === 'avatar' ? 'active' : ''}" onclick="toggleInterviewMode('avatar')" title="Have an AI character speak the question using Sarvam AI">
+                🎙️ Speaking Character Option (Sarvam AI)
+              </button>
+            </div>
+            <div>
+              <button class="secondary" style="padding:5px 11px;font-size:11px" onclick="toggleSarvamSettings()">
+                ⚙️ Sarvam Voice Settings ${savedKey ? '<span style="color:var(--green)">●</span>' : ''}
+              </button>
+            </div>
+          </div>
 
-          <label class="field" for="answerInput">Your Technical Explanation & Architecture Reasoning:</label>
+          <!-- Sarvam Settings Drawer -->
+          <div id="sarvamSettingsBox" style="display:none;background:#141a16;border:1px solid #2d3e2c;padding:18px;margin-bottom:18px;border-radius:10px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+              <strong style="color:var(--green);font-size:13px">Sarvam AI Text-to-Speech Configuration</strong>
+              <button class="iconbtn" onclick="toggleSarvamSettings()" style="font-size:12px">✕</button>
+            </div>
+            <p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5">
+              Enter your <b>Sarvam AI Subscription Key</b> (from sarvam.ai). If blank, DevMirror uses high-fidelity browser voice synthesis fallback.
+            </p>
+            <div style="display:grid;grid-template-columns:1fr 180px;gap:12px;margin-bottom:12px">
+              <div>
+                <label class="field" style="margin-top:0" for="sarvamKeyInput">Sarvam Subscription Key:</label>
+                <input type="password" id="sarvamKeyInput" placeholder="Paste your Sarvam API Key..." value="${escapeHTML(savedKey)}">
+              </div>
+              <div>
+                <label class="field" style="margin-top:0" for="sarvamSpeakerSelect">Interviewer Voice:</label>
+                <select id="sarvamSpeakerSelect" style="width:100%;background:#101217;border:1px solid var(--line);border-radius:7px;padding:12px 10px;color:#f0f1f2">
+                  <option value="meera" ${sarvamSpeaker === 'meera' ? 'selected' : ''}>Meera (Female)</option>
+                  <option value="shubh" ${sarvamSpeaker === 'shubh' ? 'selected' : ''}>Shubh (Male)</option>
+                  <option value="arvind" ${sarvamSpeaker === 'arvind' ? 'selected' : ''}>Arvind (Male)</option>
+                  <option value="pavithra" ${sarvamSpeaker === 'pavithra' ? 'selected' : ''}>Pavithra (Female)</option>
+                </select>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+              <button class="primary" style="padding:7px 14px;font-size:12px" onclick="saveSarvamSettings()">Save Settings</button>
+              <button class="secondary" style="padding:7px 14px;font-size:12px" onclick="testSarvamVoice()">Test Sample Voice</button>
+              ${savedKey ? '<button class="secondary" style="padding:7px 14px;font-size:12px;color:#f87171" onclick="clearSarvamKey()">Remove Key</button>' : ''}
+            </div>
+          </div>
+
+          ${interviewMode === 'avatar' ? `
+            <!-- Option 2: Animated AI Character Speaking Question -->
+            <div class="interviewer-box" id="interviewerBox">
+              <div class="avatar-wrapper">
+                <div class="avatar-aura"></div>
+                <svg class="avatar-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <!-- Cybernetic Base -->
+                  <circle cx="50" cy="50" r="42" fill="#18221b" stroke="#3d523a" stroke-width="2.5"/>
+                  <circle cx="50" cy="50" r="36" fill="#121814" stroke="#253523" stroke-width="1.5"/>
+                  
+                  <!-- Headphones -->
+                  <path d="M12 44 C12 24, 88 24, 88 44" stroke="#84a675" stroke-width="3" stroke-linecap="round" fill="none"/>
+                  <rect x="8" y="42" width="8" height="18" rx="4" fill="#a4d18e"/>
+                  <rect x="84" y="42" width="8" height="18" rx="4" fill="#a4d18e"/>
+
+                  <!-- Visor / Eyes -->
+                  <path d="M28 42 Q50 38 72 42" stroke="#52694b" stroke-width="1" fill="none"/>
+                  <ellipse class="eye left-eye" cx="38" cy="45" rx="5" ry="5.5" fill="#cbf0a1"/>
+                  <ellipse class="eye right-eye" cx="62" cy="45" rx="5" ry="5.5" fill="#cbf0a1"/>
+                  <circle cx="39.5" cy="43.5" r="1.8" fill="#111612"/>
+                  <circle cx="63.5" cy="43.5" r="1.8" fill="#111612"/>
+
+                  <!-- Tech Cheeks -->
+                  <circle cx="28" cy="55" r="2.5" fill="#628555" opacity="0.6"/>
+                  <circle cx="72" cy="55" r="2.5" fill="#628555" opacity="0.6"/>
+
+                  <!-- Animated Mouth -->
+                  <path class="mouth-idle" d="M42 63 Q50 68 58 63" stroke="#bcf08e" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                  <ellipse class="mouth-speak" cx="50" cy="64" rx="7" ry="5" fill="#bcf08e"/>
+                </svg>
+              </div>
+
+              <div class="speech-status" id="speechStatus">
+                <span>● AI Architect Speaking</span>
+                <div class="sound-waves" id="soundWaves">
+                  <span class="wave-bar"></span>
+                  <span class="wave-bar"></span>
+                  <span class="wave-bar"></span>
+                  <span class="wave-bar"></span>
+                  <span class="wave-bar"></span>
+                </div>
+              </div>
+
+              <div class="speech-bubble">
+                <span style="font-size:11px;color:#798972;font-weight:700;display:block;margin-bottom:4px;letter-spacing:1px">QUESTION SPOKEN:</span>
+                <div id="spokenQuestionText" style="font-size:15px;line-height:1.6;color:#e8f4de;font-weight:550">${escapeHTML(q.question)}</div>
+              </div>
+
+              <div class="speech-controls">
+                <button class="secondary" style="font-size:12px;padding:6px 14px" onclick="speakCurrentQuestion(true)" id="replayAudioBtn">
+                  ▶ Replay Question Audio
+                </button>
+                <button class="secondary" style="font-size:12px;padding:6px 14px" onclick="stopSpeaking()" id="stopAudioBtn">
+                  ⏸ Stop Audio
+                </button>
+                <span class="tag" id="voiceProviderTag" style="font-size:11px">Sarvam AI (${sarvamSpeaker})</span>
+              </div>
+            </div>
+          ` : `
+            <!-- Option 1: Clean Text Question Card -->
+            <div class="text-question-card">
+              <div class="question" style="font-size:16px;font-weight:600;margin:4px 0 16px">${escapeHTML(q.question)}</div>
+              <button class="secondary" style="font-size:11px;padding:6px 12px" onclick="speakCurrentQuestion(true)">
+                🔊 Listen to Question
+              </button>
+            </div>
+          `}
+
+          <label class="field" for="answerInput" style="margin-top:20px">Your Technical Explanation & Architecture Reasoning:</label>
           <textarea id="answerInput" placeholder="Explain your design decisions, error handling, and tradeoffs…">${escapeHTML(answerVal)}</textarea>
 
           <p class="error" id="answerError"></p>
@@ -1326,9 +1616,207 @@
           </div>
         </section>
       `;
+
+      // Auto-trigger voice when entering or changing question in Character mode
+      if (interviewMode === 'avatar') {
+        setTimeout(() => speakCurrentQuestion(false), 300);
+      }
+    }
+
+    function toggleInterviewMode(mode) {
+      interviewMode = mode;
+      localStorage.setItem('devmirror_interview_mode', mode);
+      stopSpeaking();
+      renderInterview(document.querySelector('#app'));
+    }
+
+    function toggleSarvamSettings() {
+      const box = document.querySelector('#sarvamSettingsBox');
+      if (box) {
+        box.style.display = box.style.display === 'none' ? 'block' : 'none';
+      }
+    }
+
+    function saveSarvamSettings() {
+      const keyInput = document.querySelector('#sarvamKeyInput');
+      const voiceSelect = document.querySelector('#sarvamSpeakerSelect');
+      if (keyInput) {
+        localStorage.setItem('sarvam_api_key', keyInput.value.trim());
+      }
+      if (voiceSelect) {
+        sarvamSpeaker = voiceSelect.value;
+        localStorage.setItem('sarvam_speaker', voiceSelect.value);
+      }
+      toast('Voice and Sarvam AI settings saved.');
+      toggleSarvamSettings();
+      renderInterview(document.querySelector('#app'));
+    }
+
+    function clearSarvamKey() {
+      localStorage.removeItem('sarvam_api_key');
+      toast('Sarvam API key removed. Using default voice.');
+      renderInterview(document.querySelector('#app'));
+    }
+
+    async function testSarvamVoice() {
+      const voiceSelect = document.querySelector('#sarvamSpeakerSelect');
+      const speaker = voiceSelect ? voiceSelect.value : sarvamSpeaker;
+      const testSample = `Hello, I am your technical interviewer powered by Sarvam AI. Let's discuss your system architecture.`;
+      
+      stopSpeaking();
+      const userKey = (document.querySelector('#sarvamKeyInput')?.value || localStorage.getItem('sarvam_api_key') || '').trim();
+
+      toast(`Synthesizing test sample with ${speaker}...`);
+      try {
+        const res = await apiRequest('/api/tts/speak', {
+          method: 'POST',
+          headers: userKey ? { 'x-sarvam-key': userKey } : {},
+          body: JSON.stringify({
+            text: testSample,
+            speaker: speaker,
+            language_code: 'en-IN'
+          })
+        });
+
+        if (res && res.audioBase64) {
+          const audio = new Audio('data:audio/wav;base64,' + res.audioBase64);
+          currentSpeechAudio = audio;
+          audio.play();
+          toast('Playing Sarvam voice sample.');
+          return;
+        }
+
+        speakWithBrowserTTS(testSample, speaker);
+      } catch (e) {
+        speakWithBrowserTTS(testSample, speaker);
+      }
+    }
+
+    async function speakCurrentQuestion(userInitiated = false) {
+      if (!currentInterview || !currentInterview.questions) return;
+      const q = currentInterview.questions[interviewIndex];
+      if (!q || !q.question) return;
+
+      stopSpeaking();
+
+      const box = document.querySelector('#interviewerBox');
+      const statusEl = document.querySelector('#speechStatus span');
+      const tagEl = document.querySelector('#voiceProviderTag');
+
+      if (statusEl) statusEl.textContent = '● Synthesizing voice with Sarvam AI...';
+
+      const userKey = localStorage.getItem('sarvam_api_key') || '';
+      const speaker = localStorage.getItem('sarvam_speaker') || 'meera';
+
+      try {
+        const res = await apiRequest('/api/tts/speak', {
+          method: 'POST',
+          headers: userKey ? { 'x-sarvam-key': userKey } : {},
+          body: JSON.stringify({
+            text: q.question,
+            speaker: speaker,
+            language_code: 'en-IN'
+          })
+        });
+
+        if (res && res.audioBase64) {
+          if (tagEl) tagEl.textContent = `Sarvam AI (${speaker})`;
+          if (statusEl) statusEl.textContent = `● Speaking (Sarvam AI · ${speaker})...`;
+
+          const audio = new Audio('data:audio/wav;base64,' + res.audioBase64);
+          currentSpeechAudio = audio;
+
+          audio.onplay = () => {
+            isSpeaking = true;
+            if (box) box.classList.add('speaking');
+          };
+          audio.onended = () => {
+            isSpeaking = false;
+            if (box) box.classList.remove('speaking');
+            if (statusEl) statusEl.textContent = '● Interviewer Ready';
+          };
+          audio.onpause = () => {
+            isSpeaking = false;
+            if (box) box.classList.remove('speaking');
+          };
+          audio.onerror = () => {
+            isSpeaking = false;
+            if (box) box.classList.remove('speaking');
+            if (statusEl) statusEl.textContent = '● Interviewer Ready';
+          };
+
+          await audio.play();
+          return;
+        }
+
+        speakWithBrowserTTS(q.question, speaker);
+      } catch (err) {
+        console.warn('[TTS] Falling back to browser speech:', err.message);
+        speakWithBrowserTTS(q.question, speaker);
+      }
+    }
+
+    function speakWithBrowserTTS(text, speaker) {
+      if (!('speechSynthesis' in window)) {
+        const statusEl = document.querySelector('#speechStatus span');
+        if (statusEl) statusEl.textContent = '● Speech not supported in browser';
+        return;
+      }
+
+      stopSpeaking();
+      const box = document.querySelector('#interviewerBox');
+      const statusEl = document.querySelector('#speechStatus span');
+      const tagEl = document.querySelector('#voiceProviderTag');
+
+      if (tagEl) tagEl.textContent = 'Browser Voice (Fallback)';
+      if (statusEl) statusEl.textContent = '● Speaking (Browser Speech)...';
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-IN';
+      utterance.rate = 0.95;
+
+      const voices = window.speechSynthesis.getVoices();
+      const preferredVoice = voices.find(v => v.lang.includes('IN') || v.name.includes('India')) ||
+                             voices.find(v => v.lang.startsWith('en')) ||
+                             voices[0];
+      if (preferredVoice) utterance.voice = preferredVoice;
+
+      utterance.onstart = () => {
+        isSpeaking = true;
+        if (box) box.classList.add('speaking');
+      };
+      utterance.onend = () => {
+        isSpeaking = false;
+        if (box) box.classList.remove('speaking');
+        if (statusEl) statusEl.textContent = '● Interviewer Ready';
+      };
+      utterance.onerror = () => {
+        isSpeaking = false;
+        if (box) box.classList.remove('speaking');
+        if (statusEl) statusEl.textContent = '● Ready';
+      };
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function stopSpeaking() {
+      if (currentSpeechAudio) {
+        currentSpeechAudio.pause();
+        currentSpeechAudio.currentTime = 0;
+        currentSpeechAudio = null;
+      }
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      isSpeaking = false;
+      const box = document.querySelector('#interviewerBox');
+      if (box) box.classList.remove('speaking');
+      const statusEl = document.querySelector('#speechStatus span');
+      if (statusEl) statusEl.textContent = '● Interviewer Paused / Ready';
     }
 
     function prevQuestion() {
+      stopSpeaking();
       if (interviewIndex > 0) {
         interviewIndex--;
         renderInterview(document.querySelector('#app'));
@@ -1336,6 +1824,7 @@
     }
 
     async function submitCurrentAnswer() {
+      stopSpeaking();
       const input = document.querySelector('#answerInput');
       const errEl = document.querySelector('#answerError');
       const btn = document.querySelector('#submitAnswerBtn');
