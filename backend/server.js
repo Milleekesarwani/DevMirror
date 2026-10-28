@@ -1,5 +1,6 @@
 require('dotenv').config();
 const http = require('http');
+const express = require('express');
 const app = require('./app');
 const { connectDB, disconnectDB } = require('./config/db');
 

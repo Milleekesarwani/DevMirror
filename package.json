@@ -4,7 +4,7 @@
   "description": "DevMirror - GitHub-powered developer assessment platform",
   "main": "index.js",
   "scripts": {
-    "build": "node -e \"const fs = require('fs'); fs.copyFileSync('frontend/index.html', 'index.html'); console.log('Build completed successfully.');\"",
+    "build": "node -e \"const fs = require('fs'); fs.mkdirSync('public', { recursive: true }); fs.copyFileSync('frontend/index.html', 'index.html'); fs.copyFileSync('frontend/index.html', 'public/index.html'); console.log('Build completed successfully.');\"",
     "start": "node index.js",
     "dev": "npm run dev --prefix backend",
     "test": "npm test --prefix backend"
