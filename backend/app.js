@@ -26,6 +26,7 @@ app.use(
 
 // Explicit CORS Origin handling
 const allowedOrigins = [
+  'https://dev-mirror-tan.vercel.app',
   process.env.FRONTEND_ORIGIN || 'http://localhost:3000',
   'http://localhost:5173',
   'http://127.0.0.1:5500',
@@ -42,13 +43,15 @@ app.use(
 
       const isAllowed =
         allowedOrigins.indexOf(origin) !== -1 ||
+        origin.endsWith('.vercel.app') ||
         origin.endsWith('.chatgpt.site') ||
+        (process.env.FRONTEND_ORIGIN && origin === process.env.FRONTEND_ORIGIN) ||
         process.env.NODE_ENV !== 'production';
 
       if (isAllowed) {
         return callback(null, true);
       }
-      return callback(new Error('CORS policy violation: This origin is not allowed.'));
+      return callback(new Error(`CORS policy violation: Origin '${origin}' is not allowed.`));
     },
     credentials: true, // Allow cookies to be sent across origins
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],

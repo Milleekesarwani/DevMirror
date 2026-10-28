@@ -1,5 +1,6 @@
 const request = require('supertest');
 const app = require('../app');
+require('./setup');
 
 describe('Session 1: Health Check Endpoint', () => {
   it('GET /api/health should return HTTP 200 and { status: "ok" }', async () => {

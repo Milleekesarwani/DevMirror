@@ -129,4 +129,47 @@ describe('Sessions 3-4: Authentication Flow & Protected Routes', () => {
     const cookies = res.headers['set-cookie'];
     expect(cookies[0]).toMatch(/Expires=Thu, 01 Jan 1970/);
   });
+
+  it('Protected resource routes should reject signed-out requests with HTTP 401', async () => {
+    const repoRes = await request(app).get('/api/repos');
+    expect(repoRes.status).toBe(401);
+    expect(repoRes.body.success).toBe(false);
+
+    const dashRes = await request(app).get('/api/dashboard');
+    expect(dashRes.status).toBe(401);
+    expect(dashRes.body.success).toBe(false);
+
+    const roadRes = await request(app).get('/api/roadmap');
+    expect(roadRes.status).toBe(401);
+    expect(roadRes.body.success).toBe(false);
+
+    const assessRes = await request(app).get('/api/assessments');
+    expect(assessRes.status).toBe(401);
+    expect(assessRes.body.success).toBe(false);
+  });
+
+  it('Expired JWT token should be rejected with HTTP 401', async () => {
+    const jwt = require('jsonwebtoken');
+    const secret = process.env.JWT_SECRET || 'test_jwt_secret_key_for_unit_tests_32chars';
+    // Create token expired 1 hour ago
+    const expiredToken = jwt.sign({ id: '507f1f77bcf86cd799439011' }, secret, { expiresIn: '-1h' });
+
+    const res = await request(app)
+      .get('/api/auth/me')
+      .set('Authorization', `Bearer ${expiredToken}`);
+
+    expect(res.status).toBe(401);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toMatch(/expired/i);
+  });
+
+  it('Malformed JWT token should be rejected with HTTP 401', async () => {
+    const res = await request(app)
+      .get('/api/auth/me')
+      .set('Authorization', 'Bearer totally.invalid.jwttoken');
+
+    expect(res.status).toBe(401);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toMatch(/invalid/i);
+  });
 });

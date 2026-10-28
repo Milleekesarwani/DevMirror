@@ -9,11 +9,17 @@ beforeAll(async () => {
   process.env.JWT_EXPIRES_IN = '1d';
   process.env.COOKIE_SECRET = 'test_cookie_secret';
 
-  mongoServer = await MongoMemoryServer.create();
-  const uri = mongoServer.getUri();
-  process.env.MONGODB_URI = uri;
-
-  await mongoose.connect(uri);
+  try {
+    mongoServer = await MongoMemoryServer.create();
+    const uri = mongoServer.getUri();
+    process.env.MONGODB_URI = uri;
+    await mongoose.connect(uri);
+  } catch (err) {
+    // If MongoMemoryServer failed (e.g. EBUSY on Windows when another instance is running)
+    const fallbackUri = process.env.TEST_MONGODB_URI || 'mongodb://127.0.0.1:50769/devmirror_test';
+    process.env.MONGODB_URI = fallbackUri;
+    await mongoose.connect(fallbackUri);
+  }
 });
 
 afterEach(async () => {

@@ -19,24 +19,9 @@ const requireAuth = async (req, res, next) => {
     }
 
     if (!token) {
-      // In development mode (not test suite), auto-provide demo user session so frontend is never blocked
-      if (process.env.NODE_ENV !== 'test') {
-        let demoUser = await User.findOne({ email: 'demo@devmirror.local' });
-        if (!demoUser) {
-          demoUser = await User.create({
-            name: 'Milee Kesarwani',
-            email: 'demo@devmirror.local',
-            passwordHash: 'demopasswordhash123',
-            targetRole: 'Full Stack Developer'
-          });
-        }
-        req.user = demoUser;
-        return next();
-      }
-
       return res.status(401).json({
         success: false,
-        error: 'Authentication required. No token provided.'
+        error: 'Authentication required. Please sign in.'
       });
     }
 
@@ -48,14 +33,9 @@ const requireAuth = async (req, res, next) => {
     const user = await User.findById(decoded.id).select('-passwordHash');
 
     if (!user) {
-      if (process.env.NODE_ENV !== 'test') {
-        let demoUser = await User.findOne({ email: 'demo@devmirror.local' });
-        req.user = demoUser;
-        return next();
-      }
       return res.status(401).json({
         success: false,
-        error: 'User belonging to this token no longer exists.'
+        error: 'User session no longer valid. Please sign in again.'
       });
     }
 
@@ -64,14 +44,9 @@ const requireAuth = async (req, res, next) => {
     next();
   } catch (error) {
     if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
-      if (process.env.NODE_ENV !== 'test') {
-        let demoUser = await User.findOne({ email: 'demo@devmirror.local' });
-        req.user = demoUser;
-        return next();
-      }
       return res.status(401).json({
         success: false,
-        error: 'Invalid or expired authentication token.'
+        error: 'Invalid or expired authentication session. Please sign in again.'
       });
     }
     next(error);

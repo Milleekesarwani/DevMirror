@@ -34,7 +34,7 @@ const generateTokenAndSetCookie = (res, userId) => {
   const cookieOptions = {
     httpOnly: true, // Prevents XSS script access
     secure: isProduction, // HTTPS only in production
-    sameSite: isProduction ? 'strict' : 'lax', // CSRF protection
+    sameSite: isProduction ? 'none' : 'lax', // Supports both same-origin and cross-origin with secure: true
     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
   };
 
@@ -148,7 +148,7 @@ const logout = async (req, res) => {
   res.cookie('token', '', {
     httpOnly: true,
     secure: isProduction,
-    sameSite: isProduction ? 'strict' : 'lax',
+    sameSite: isProduction ? 'none' : 'lax',
     expires: new Date(0) // Expire immediately
   });
 
